@@ -8,9 +8,7 @@
  </head>
  <body >
  <script type='text/javascript'>
-/* <![CDATA[ */ 
 
- 
 // On attend que la page soit chargée 
 jQuery(document).ready(function()
 {
@@ -25,55 +23,49 @@ jQuery(document).ready(function()
    });
 
 });
-
+//fonction pour changer le nom sur le bouton qui planque le formulaire
 function cache()
     {
     if(document.getElementById("cacher").innerHTML === "Agrandir le tableau"){
                     document.getElementById("cacher").innerHTML = "Réduire le tableau";
-                    document.getElementById("span").className= "'glyphicon glyphicon-menu-up'";
                     
             }else{
-                    document.getElementById("cacher").innerHTML = "Agrandir le tableau";         
-                    document.getElementById("span").className= "'glyphicon glyphicon-menu-down'";;
+                    document.getElementById("cacher").innerHTML = "Agrandir le tableau";
             }
-    }
+    };
 
 </script>  
 <?php
 // LES FONCTIONS 
 //AU DEMARAGE
 //try pour voir si on a pas une erreur au démarage
-try
-{
 	$bdd = new PDO('mysql:host=localhost;dbname=catalogue', 'root', '',array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-}
-catch (Exception $e)
-{
-        die('Erreur : ' . $e->getMessage());
-}
-//LES DONNES COMBOBOX ET AUTRES 
+
+//LES DONNES pour alimenter les COMBOBOX 
 $tab_type = ['Aucun Filtre','Formation','Accompagnement','Information','Service'];
 $tab_famille = $bdd->query('SELECT libelle FROM famille');
 $tab_cible = $bdd->query('SELECT libelle FROM cible');
 $tab_lieu = $bdd->query('SELECT libelle FROM lieu');
-//pour quand le type de formation sera rajouter.
+//pour quand le type de formation sera rajouter dans les champes de tri.
 $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','AutoDiagnostic','Formation Proffesionnelle continue'];
 
- //MODULE DE RECHERCHE PAS TOUCHER  ?> 
+?>
 
-     <div class="container-fluid" >
-         <div class="col-md-12">
-
-
+<div class="container-fluid" >
+<div class="col-md-12">
 <div class="row">
     <div class="col-lg-4">
 <img src="images/test.jpg">  
-    </div></div>
+    </div>
+</div>
 <div class="row">    
     <div class="col-md-offset-4 col-md-4">
 <legend>Produits et Services propos&eacute; par la CCI</legend>
-</div></div>
-             <div class="container"  id="zone" >
+</div>
+</div>
+  <?php //l'id zone c'est pour pouvoir l'identifer pour la fonction jquery ?>
+<div class="container"  id="zone" >
+    <!-- Début du formulaire -->
 <form class="form-horizontal" method="post" >
 <fieldset>
 <!-- Module de recherche -->
@@ -83,11 +75,12 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
   <div class="col-md-4">
       <input  id="libelle" name="libelle" type="text" placeholder="Tapez ici..." value="<?php if(empty($_POST['libelle'])){}else{echo $_POST['libelle'];} ?>"class="form-control input-md">
   </div>
- <?php // <div class="col-md-3">   <?php if(!empty($_POST)){echo "Votre recherche retourne : ".$reponse1." resultats";} </div>  ?>
 </div>
 </div>
 <div class="row">
+    
 <div class="form-group ">
+    <!-- Tri par type -->
     <label class="col-md-1 control-label" for="type"><l2>Type de Produit</l2></label>
    <div class="col-md-5" >
          <select id="type" name="type" class="form-control">
@@ -104,6 +97,7 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
 ?> 
              </select>
       </div>
+    <!-- tri par "famille" -->
   <label class="col-md-1 control-label" for="famille" ><l1>Th&eacute;matique</l1></label>
   <div class="col-md-5">
     <select id="famille" name="famille" class="form-control" >
@@ -123,6 +117,7 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
 <div class="row">
 <!-- Select Basic -->
 <div class="form-group">
+    <!-- Trie selon les cibles -->
     <label class="col-md-1 control-label" for="cible"><l3>Public concern&eacute;</l3></label>
   <div class="col-md-5">
     <select id="cible" name="cible" class="form-control">
@@ -136,7 +131,7 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
          }         }   ?>
     </select>
   </div>
-
+            <!-- Trieu par lieu -->
     <label class="col-md-1 control-label" for="lieu"><l4>Lieu</l4></label>
   <div class="col-md-5">
     <select id="lieu" name="lieu" class="form-control">
@@ -168,9 +163,7 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
              
             
 </div>
-     </div>
-     <?php //EN TETE                  ?>
-     
+     </div>     
 <?php 
 ////////////////////////////////////////////////////////////////////////////////BLOC ENTETE TABLEAU///////////////////////////////////////////////////////////////////////////////
   ?>
@@ -179,6 +172,7 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
 <button onclick="cache();"id="cacher" class="btn btn-success btn-block" >Agrandir le tableau</button>
 </div>    
 </div>
+<!-- Zone d'entete du tableau-->
 <div class="container-fluid-table" id="tableau" > 
       
  <table class="table-bordered ">        
@@ -198,12 +192,12 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
       </tr>
     </thead>       
      <?php 
-////////////////////////////////////////////////////////////////////////////////TABLEAU AU DEMARAGE///////////////////////////////////////////////////////////////////////////////          
+////////TABLEAU QUAND ON ARRIVE DESSUS////         
  if (empty($_POST)){
 $reponse = $bdd->query('SELECT * FROM produit Where Actif = "Oui"');        
  ?>  
    <tbody>         <?php
-// On affiche chaque entrée une à une   
+// On affiche chaque entrée une à une et on modifie certaine chose au passage pour l'affichage  
 while($donnees = $reponse->fetch())
 {  ?>  
       
@@ -233,10 +227,8 @@ $famille = $_POST['famille'];
 $cible = $_POST['cible'];
 $lieu = $_POST['lieu'];
 $type = $_POST['type'];
-//on a mis libelle juste pour que ca soit plus simple pour la requete
 $champs =[$libelle,$famille,$cible,$lieu,$type];
 $champstitre =['libelle','famille',"cible","lieu","type"];
-////LES é NE MARCHE PPAASSS//////////////////////////////////////////////////////////////////////////////////////////////////
 $lieux =['CCI Bourail','CCI Koné','CCI Koumac','CCI Nouméa','CCI Poindimié'];
 // on crée la requête SQL en fonction des champs remplit
 $sql= 'SELECT * FROM produit WHERE ';
@@ -250,7 +242,7 @@ if($champs[$i] == 'Aucun Filtre'){}else{
       }
       
      }else{
-         //si le lieux choisit est une cci dans une ville (CCI koné ou autre) on rajoute dans la requete les produits concérné par "toutes les cci" 
+         //si le lieux choisit est une cci lié a une ville (CCI koné ou autre) on rajoute dans la requete les produits concerné par "toutes les cci"  également
      if($champs[$i] === 'CCI Koné' or $champs[$i] == 'CCI Koumac' or $champs[$i] == 'CCI Bourail'or $champs[$i] == 'CCI Nouméa'or $champs[$i] == 'CCI Poindimié')
      {$ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';}    
       
@@ -262,17 +254,12 @@ if($champs[$i] == 'Aucun Filtre'){}else{
 $sql = $sql.$ajout.' AND Actif ="Oui" AND code NOT LIKE "%FINTRA%"';
 //echo $sql;
 
-//RECHERCHE SEUL
+//affichage du nombre de resultat retourné par la requete envoyé a la bdd 
 $reponse = $bdd->query($sql);
 if($reponse->rowCount() == 1){echo "<h3>".$reponse->rowCount()." resultat</h3>"; }
 else{if($reponse->rowCount() == 0){echo "<h3>Aucun resultat"; }else{
 echo "<h3>".$reponse->rowCount()." resultats</h3>";}}
 
-//Boucle pour savoir faire la recherche avec quoi  
-
-
-
-//test 
 ?>
      <tbody>
              
