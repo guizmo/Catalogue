@@ -1,86 +1,58 @@
 <html>
  <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php header('Content-Type: text/html; charset=UTF-8'); ?>
+    <meta charset="utf-8">
   <title>Catalogue</title>
-  <link href="bootstrap-3.3.5-dist/css/bootstrap.css" rel="stylesheet">
-  <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'></script>
+  <meta name="description" content="">
+  
+  <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+  <script type='text/javascript' src='jquery.js'></script>
  </head>
  <body >
- <script type='text/javascript'>
-
-// On attend que la page soit chargée 
-jQuery(document).ready(function()
-{
-   // On cache la zone de texte
-  
-   // toggle() lorsque le lien avec l'ID #toggler est cliqué
-   jQuery('#cacher').click(function()
-  {    
-      jQuery('#zone').slideToggle()(400);
-      
-      return false;
-   });
-
-});
-//fonction pour changer le nom sur le bouton qui planque le formulaire
-function cache()
-    {
-    if(document.getElementById("cacher").innerHTML === "Agrandir le tableau"){
-                    document.getElementById("cacher").innerHTML = "Réduire le tableau";
-                    
-            }else{
-                    document.getElementById("cacher").innerHTML = "Agrandir le tableau";
-            }
-    };
-
-</script>  
 <?php
-// LES FONCTIONS 
-//AU DEMARAGE
-//try pour voir si on a pas une erreur au démarage
-	$bdd = new PDO('mysql:host=localhost;dbname=catalogue', 'root', '',array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-
-//LES DONNES pour alimenter les COMBOBOX 
+//co a la BDD
+$bdd = new PDO('mysql:host=localhost;dbname=catalogue', 'root', '',array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+  //LES DONNES pour alimenter les COMBOBOX 
 $tab_type = ['Aucun Filtre','Formation','Accompagnement','Information','Service'];
 $tab_famille = $bdd->query('SELECT libelle FROM famille');
 $tab_cible = $bdd->query('SELECT libelle FROM cible');
 $tab_lieu = $bdd->query('SELECT libelle FROM lieu');
 //pour quand le type de formation sera rajouter dans les champes de tri.
 $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','AutoDiagnostic','Formation Proffesionnelle continue'];
-
-?>
-
-<div class="container-fluid" >
+?> 
+<div class="container-fluid" id="fond" >
+<div class="container-fluid" id="formulaire"  >
 <div class="col-md-12">
-<div class="row">
-    <div class="col-lg-4">
-<img src="images/test.jpg">  
+    <div class="row">
+        <div class="col-lg-4">
+            <img src="bootstrap/images/logo.jpg">  
+        </div>
     </div>
-</div>
-<div class="row">    
-    <div class="col-md-offset-4 col-md-4">
-<legend>Produits et Services propos&eacute; par la CCI</legend>
-</div>
-</div>
-  <?php //l'id zone c'est pour pouvoir l'identifer pour la fonction jquery ?>
-<div class="container"  id="zone" >
+    <div class="row">    
+        <div class="col-md-offset-4 col-md-4">
+            <legend>Produits et Services propos&eacute; par la CCI</legend>
+        </div>
+    </div>
+   <!-- l'id zone c'est pour pouvoir l'identifer pour la fonction jquery  -->
+<div class="container-fluid"  id="zone" >
     <!-- Début du formulaire -->
 <form class="form-horizontal" method="post" >
 <fieldset>
 <!-- Module de recherche -->
-<div class="row">
-<div class="form-group">
-  <label class="col-md-4 control-label" for="libelle">Votre recherche</label>  
-  <div class="col-md-4">
-      <input  id="libelle" name="libelle" type="text" placeholder="Tapez ici..." value="<?php if(empty($_POST['libelle'])){}else{echo $_POST['libelle'];} ?>"class="form-control input-md">
-  </div>
-</div>
-</div>
-<div class="row">
+    <div class="row">
+        <div class="form-group">
+            <!-- pour que la valeur reste dans le cahmp si la personne la taper puis a valider-->
+            <?php $libelle=''; if(empty($_POST['libelle'])){}else{$libelle = $_POST['libelle'];} ?>
+            <label class="col-md-4 control-label" for="libelle"><l5>Votre recherche</l5></label>  
+            <div class="col-md-4">
+            <input  id="libelle" name="libelle" type="text" placeholder="Tapez ici..." value="<?php echo $libelle;?>"class="form-control input-md">
+            </div>
+        </div>
+    </div>
+    <div class="row">
     
-<div class="form-group ">
-    <!-- Tri par type -->
+        <div class="form-group ">
+<!-- Tri par type -->
     <label class="col-md-1 control-label" for="type"><l2>Type de Produit</l2></label>
    <div class="col-md-5" >
          <select id="type" name="type" class="form-control">
@@ -88,7 +60,7 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
    foreach($tab_type as $value)
    {
    if($value == $_POST['type']){
-   echo '<option value="'.$value.'" selected>'.$value.'</option>';
+   echo '<option style="color:#9acfea" value="'.$value.'" selected>'.$value.'</option>';
    }
    else{
    echo '<option value="'.$value.'">'.$value.'</option>';   
@@ -103,8 +75,8 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
     <select id="famille" name="famille" class="form-control" >
      <?php
     if($_POST['famille'] == 'Aucun Filtre'){  echo '<option value="Aucun Filtre" selected>Aucun Filtre</option>'; }
-    else{   echo '<option value="Aucun Filtre">Aucun Filtre</option>'; }  
-     while($donnees = $tab_famille->fetch()){    
+    else{ echo '<option value="Aucun Filtre">Aucun Filtre</option>'; }  
+    while($donnees = $tab_famille->fetch()){    
          if($donnees['libelle'] == $_POST['famille']){
      echo '<option value="'.$donnees["libelle"].'" selected>'.$donnees["libelle"].'</option>';
          }else {
@@ -168,14 +140,16 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
 ////////////////////////////////////////////////////////////////////////////////BLOC ENTETE TABLEAU///////////////////////////////////////////////////////////////////////////////
   ?>
 <div class="container">
-<div class="col-md-offset-7 col-md-3"> 
-<button onclick="cache();"id="cacher" class="btn btn-success btn-block" >Agrandir le tableau</button>
+<div class="col-md-2"> 
+<?php if (empty($_POST)){ ?> <button onclick="cache();"id="cacher" class="btn btn-success btn-block" >Agrandir le tableau</button> <?php }
+else{?> <button onclick="cache();"id="cacher" class="btn btn-success btn-block" >Afficher le Formulaire</button> <?php }; ?>
+
 </div>    
 </div>
 <!-- Zone d'entete du tableau-->
 <div class="container-fluid-table" id="tableau" > 
       
- <table class="table-bordered ">        
+ <table class="table-bordered " id="table">        
     <thead> 
       <tr>
                 <th width ="5%">Libelle</th>
@@ -195,6 +169,8 @@ $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','
 ////////TABLEAU QUAND ON ARRIVE DESSUS////         
  if (empty($_POST)){
 $reponse = $bdd->query('SELECT * FROM produit Where Actif = "Oui"');        
+// %27 = apostrophe
+$demande=' Demande d%27information : '
  ?>  
    <tbody>         <?php
 // On affiche chaque entrée une à une et on modifie certaine chose au passage pour l'affichage  
@@ -210,7 +186,7 @@ while($donnees = $reponse->fetch())
                 <td width="10%"><?php echo $donnees['lieu']; ?>
                 <td width="10%"><?php echo $donnees['format']; ?></td>
                 <td width="10%"><?php if($donnees['pv session ttc'] == 0){echo "Gratuit";}else{echo $donnees['pv session ttc'].'F';} ?></td>
-                <td width="10%"><?php echo "<a href='mailto:".$donnees['contact']."?subject= Demande d'information :".$donnees['libelle']." ".$donnees['code']."'>".$donnees['contact'].'</a><br><a href="'.$donnees['lien'].'">Télécharger la Fiche</a>'; ?></td>
+                <td width="10%"><?php echo "<a href='mailto:".$donnees['contact']."?subject=".$demande.$donnees['libelle']." ".$donnees['code']."'>".$donnees['contact'].'</a><br><a href="'.$donnees['lien'].'">Télécharger la Fiche</a>'; ?></td>
                 
       </tr>
 <?php }    
@@ -222,6 +198,7 @@ $reponse->closeCursor();
    </tbody> <?php
 }else { 
 ////////////////////////////////////////////////////////////////////////////////TABLEAU QUAND RECHERCHE///////////////////////////////////////////////////////////////////////////////
+    
 $libelle = $_POST['libelle'];    
 $famille = $_POST['famille'];
 $cible = $_POST['cible'];
@@ -280,9 +257,59 @@ while($donnees = $reponse->fetch())
                 <td width="10%"><?php echo "<a href='mailto:".$donnees['contact']."?subject= Demande d'information :".$donnees['libelle']." ".$donnees['code']."'>".$donnees['contact'].'</a><br><a href="'.$donnees['lien'].'">Télécharger la Fiche</a>'; ?></td>
               </tr>
 <?php   }  ?>
-     </tbody> </table> </div>  <?php
+     </tbody> </table> </div>  </div><?php
 }
 
-?>   
+
+   if (empty($_POST)){ ?><script type='text/javascript'>
+// On attend que la page soit chargée 
+jQuery(document).ready(function()
+{
+   // toggle() lorsque le lien avec l'ID #toggler est cliqué
+   jQuery('#cacher').click(function()
+  {    
+      jQuery('#zone').slideToggle()(400);
+      
+      return false;
+   });
+
+});
+//fonction pour changer le nom sur le bouton qui planque le formulaire
+function cache()
+    {
+    if(document.getElementById("cacher").innerHTML === "Agrandir le tableau"){
+                    document.getElementById("cacher").innerHTML = "Afficher le Formulaire";
+                    
+            }else{
+                    document.getElementById("cacher").innerHTML = "Agrandir le tableau";
+            }
+    };
+
+</script>  <?php   }else{ ?>
+  <script> 
+jQuery(document).ready(function()
+{   jQuery('#cacher').click(function()
+  {    
+      jQuery('#zone').slideToggle()(400);
+      
+      return false;
+   });   
+   $('#zone').slideToggle()(400);
+   
+  });
+  function cache()
+    {
+    if(document.getElementById("cacher").innerHTML === "Agrandir le tableau"){
+                    document.getElementById("cacher").innerHTML = "Afficher le Formulaire";
+                    
+            }else{
+                    document.getElementById("cacher").innerHTML = "Agrandir le tableau";
+            }
+    };
+    </script>
+    <?php  
+  }
+ ?> 
+
  </body>
 </html>
