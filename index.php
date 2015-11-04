@@ -19,6 +19,26 @@ $tab_cible = $bdd->query('SELECT libelle FROM cible');
 $tab_lieu = $bdd->query('SELECT libelle FROM lieu');
 //pour quand le type de formation sera rajouter dans les champes de tri.
 $tab_form = ['Formation Diplomante','Certificat consulaire de spécialisation','AutoDiagnostic','Formation Proffesionnelle continue'];
+//Fonctions de tri a appliquer pour les tuples restants (produit pariculier a pas afficher etc..)
+function tri($var)
+{ 
+    //les produit a ne pas afficher
+$args=array("09I005","09I006","09I007","09I008","09I009","09I010","09I011","09I012","09I013","09I014","09I015","09I016","09I017","09I018","09I019","09I020","09I021","09I022");
+array_push($args,"09I023","09I024","09I025","09I026","09I027","09I028","09I029","09I030","09I031","09I032","09I033","09I034","09I035","09I036","09I037","09I038","09I039","09I040");
+array_push($args,"09I041","09I042","09I043","09I044","09I045","09I046","09I047","09I048","09I049","09I050","09I051");
+array_push("09I005","09I006","09I007","09I008","09I009","09I010","09I011","09I012","09I013","09I014","09I015","09I016","09I017","09I018","09I019","09I020","09I021","09I022");
+array_push($args,"09I023","09I024","09I025","09I026","09I027","09I028","09I029","09I030","09I031","09I032","09I033","09I034","09I035","09I036","09I037","09I038","09I039","09I040");
+array_push($args,"09I041","09I042","09I043","09I044","09I045","09I046","09I047","09I048","09I049","09I050","09I051");
+
+$valider = NULL;
+    for($i=0;$i<count($args);$i++){
+     if($var[9]==$args[$i]){
+     $valider = FALSE;}   
+    }
+ if($valider===FALSE){}else{return $var;}   
+    
+}
+$args = array()
 ?> 
 <div class="container-fluid" id="fond" >
 <div class="container-fluid" id="formulaire"  >
@@ -173,23 +193,59 @@ $reponse = $bdd->query('SELECT * FROM produit Where Actif = "Oui"');
 $demande=' Demande d%27information : '
  ?>  
    <tbody>         <?php
+   $tableau= array();
+   $i =0;
 // On affiche chaque entrée une à une et on modifie certaine chose au passage pour l'affichage  
 while($donnees = $reponse->fetch())
-{  ?>  
+{    $tableau[$i][0] =$donnees['libelle'];                    
+     $tableau[$i][1] =$donnees['famille'];
+     $tableau[$i][2] =$donnees['type'];
+     $tableau[$i][3] =$donnees['objectif'];
+     $tableau[$i][4] =$donnees['pre-requis'];
+     $tableau[$i][5] =$donnees['lieu'];
+     $tableau[$i][6] =$donnees['format'];
+     $tableau[$i][7] =$donnees['pv session ttc'];
+     $tableau[$i][8] =$donnees['contact'];
+     $tableau[$i][9] =$donnees['code'];
+     $tableau[$i][10] =$donnees['lien'];
+$i++;}
+
+foreach (array_filter($tableau,"tri") as $value) {
+    
+?>  
       
       <tr>    
-                <td width="10%"><?php echo $donnees['libelle']; ?></td>
-            <?php if(!empty($_POST) && $_POST['famille'] != "Aucun Filtre"){}else{ echo'<h1><td width="5%">'; echo $donnees['famille']."</td></h1>"; } ?>
-            <?php if(!empty($_POST) && $_POST['type'] != "Aucun Filtre"){}else{ echo'<td width="5%">'; echo $donnees['type']."</td>"; } ?>
-                <td width="10%"><?php echo $donnees['objectif']; ?></td>
-                <td width="5%"><?php echo $donnees['pre-requis']; ?></td>
-                <td width="10%"><?php echo $donnees['lieu']; ?>
-                <td width="10%"><?php echo $donnees['format']; ?></td>
-                <td width="10%"><?php if($donnees['pv session ttc'] == 0){echo "Gratuit";}else{echo $donnees['pv session ttc'].'F';} ?></td>
-                <td width="10%"><?php echo "<a href='mailto:".$donnees['contact']."?subject=".$demande.$donnees['libelle']." ".$donnees['code']."'>".$donnees['contact'].'</a><br><a href="'.$donnees['lien'].'">Télécharger la Fiche</a>'; ?></td>
+                <td width="10%"><?php echo $value[0]; ?></td>
+            <?php if(!empty($_POST) && $_POST['famille'] != "Aucun Filtre"){}else{ echo'<h1><td width="5%">'; echo $value[1]."</td></h1>"; } ?>
+            <?php if(!empty($_POST) && $_POST['type'] != "Aucun Filtre"){}else{ echo'<td width="5%">'; echo $value[2]."</td>"; } ?>
+                <td width="10%"><?php echo $value[3]; ?></td>
+                <td width="5%"><?php echo $value[4]; ?></td>
+                <td width="10%"><?php echo $value[5]; ?>
+                <td width="10%"><?php echo $value[6]; ?></td>
+                <td width="10%"><?php if($value[7] == 0){echo "Gratuit";}else{echo $value[7].' F';} ?></td>
+                <td width="10%"><?php echo "<a href='mailto:".$value[8]."?subject=".$demande.$value[0]." ".$value[9]."'>".$value[8].'</a><br><a href="'.$value[10].'">Télécharger la Fiche</a>'; ?></td>
                 
       </tr>
-<?php }    
+<?php }   
+    
+
+/*    
+{ 
+?>  
+      
+      <tr>    
+                <td width="10%"><?php echo $tableau[$i][0]; ?></td>
+            <?php if(!empty($_POST) && $_POST['famille'] != "Aucun Filtre"){}else{ echo'<h1><td width="5%">'; echo $tableau[$i][1]."</td></h1>"; } ?>
+            <?php if(!empty($_POST) && $_POST['type'] != "Aucun Filtre"){}else{ echo'<td width="5%">'; echo $tableau[$i][2]."</td>"; } ?>
+                <td width="10%"><?php echo $tableau[$i][3]; ?></td>
+                <td width="5%"><?php echo $tableau[$i][4]; ?></td>
+                <td width="10%"><?php echo $tableau[$i][5]; ?>
+                <td width="10%"><?php echo $tableau[$i][6]; ?></td>
+                <td width="10%"><?php if($tableau[$i][7] == 0){echo "Gratuit";}else{echo $tableau[$i][7].' F';} ?></td>
+                <td width="10%"><?php echo "<a href='mailto:".$tableau[$i][8]."?subject=".$demande.$tableau[$i][0]." ".$tableau[$i][9]."'>".$tableau[$i][8].'</a><br><a href="'.$tableau[$i][10].'">Télécharger la Fiche</a>'; ?></td>
+                
+      </tr>
+<?php  $i++;}   */
                  
 
 $reponse->closeCursor();
@@ -216,45 +272,82 @@ if($champs[$i] == 'Aucun Filtre'){}else{
       $ajout =$ajout."(libelle LIKE '%".$libelle."%' OR famille LIKE '%".$champs[$i]."%' OR objectif LIKE '%".$champs[$i]."%')"; 
       if($champstitre[$i] == 'libelle' and $libelle == ""){ 
       $ajout = $champstitre[$i]." LIKE '%".$champs[$i]."%'";    
-      }
-      
-     }else{
-         //si le lieux choisit est une cci lié a une ville (CCI koné ou autre) on rajoute dans la requete les produits concerné par "toutes les cci"  également
+      }}else{
+      switch ($champs[$i])
+{
+  case 'CCI Koné':
+    $ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';
+    break;        
+  case 'CCI Koumac':
+    $ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';
+    break;
+  case 'CCI Bourail':
+    $ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';
+    break;  
+  case 'CCI Nouméa':
+    $ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';
+    break;  
+ case 'CCI Poindimié':
+    $ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';
+    break;
+  case 'En entreprise':
+    $ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%En entreprise%" OR '.$champstitre[$i].' LIKE "%En entreprise Nouméa Grand Nouméa%" OR '.$champstitre[$i].' LIKE "%En entreprise secteur agences%" )';  
+      break;
+  case 'Information telechargeable':
+    $ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%Information disponible sur NC-Eco%" OR '.$champstitre[$i].' LIKE "%Information téléchargeable sur le site cci.nc%" )';  
+      break;
+  default:
+    $ajout =$ajout.' AND '.$champstitre[$i].' LIKE "%'.$champs[$i].'%"';            
+}    
+         /*si le lieux choisit est une cci lié a une ville (CCI koné ou autre) on rajoute dans la requete les produits concerné par "toutes les cci"  également
      if($champs[$i] === 'CCI Koné' or $champs[$i] == 'CCI Koumac' or $champs[$i] == 'CCI Bourail'or $champs[$i] == 'CCI Nouméa'or $champs[$i] == 'CCI Poindimié')
-     {$ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';}    
-      
+     {$ajout=$ajout.' AND ( '.$champstitre[$i].' LIKE "%'.$champs[$i].'%" OR '.$champstitre[$i].' LIKE "%Toutes Les Cci%" )';} 
       else{
-     $ajout =$ajout.' AND '.$champstitre[$i].' LIKE "%'.$champs[$i].'%"'; }}
+     $ajout =$ajout.' AND '.$champstitre[$i].' LIKE "%'.$champs[$i].'%"'; }} */
              
 }    
-}  
+}  }
 $sql = $sql.$ajout.' AND Actif ="Oui" AND code NOT LIKE "%FINTRA%"';
-//echo $sql;
+echo $sql;
 
 //affichage du nombre de resultat retourné par la requete envoyé a la bdd 
-$reponse = $bdd->query($sql);
-if($reponse->rowCount() == 1){echo "<h3>".$reponse->rowCount()." resultat</h3>"; }
-else{if($reponse->rowCount() == 0){echo "<h3>Aucun resultat"; }else{
-echo "<h3>".$reponse->rowCount()." resultats</h3>";}}
+$result = $bdd->query($sql);
+while($donnees = $result->fetch())
+{    $tableau[$i][0] =$donnees['libelle'];                    
+     $tableau[$i][1] =$donnees['famille'];
+     $tableau[$i][2] =$donnees['type'];
+     $tableau[$i][3] =$donnees['objectif'];
+     $tableau[$i][4] =$donnees['pre-requis'];
+     $tableau[$i][5] =$donnees['lieu'];
+     $tableau[$i][6] =$donnees['format'];
+     $tableau[$i][7] =$donnees['pv session ttc'];
+     $tableau[$i][8] =$donnees['contact'];
+     $tableau[$i][9] =$donnees['code'];
+     $tableau[$i][10] =$donnees['lien'];
+$i++;}
+$reponse = count(array_filter($tableau,"tri"));
+if($reponse == 1){echo "<h3>".$reponse." resultat</h3>"; }
+else{if($reponse == 0){echo "<h3>Aucun resultat"; }else{
+echo "<h3>".$reponse." resultats</h3>";}}
 
 ?>
      <tbody>
              
              <?php
-             
-while($donnees = $reponse->fetch())
-{   ?>
+
+
+foreach (array_filter($tableau,"tri") as $value) {   ?>
        
               <tr>
-                <td width="10%"><?php echo $donnees['libelle']; ?></td>
-                <?php if(!empty($_POST) && $_POST['famille'] != "Aucun Filtre"){}else{ echo'<td width="10%">'; echo $donnees['famille']."</td>"; } ?>
-                <?php if(!empty($_POST) && $_POST['type'] != "Aucun Filtre"){}else{ echo'<td width="10%">'; echo $donnees['type']."</td>"; } ?>
-                <td width="10%"><?php echo $donnees['objectif']; ?></td>
-                <td width="10%"><?php echo $donnees['pre-requis']; ?></td>
-                <?php echo'<td width="10%">'.$donnees['lieu']."</td>"; ?>
-                <td width="10%"><?php echo $donnees['format']; ?></td>
-                <td width="10%"><?php if($donnees['pv session ttc'] == 0){echo "Gratuit";}else{echo $donnees['pv session ttc'].'F';} ?></td>
-                <td width="10%"><?php echo "<a href='mailto:".$donnees['contact']."?subject= Demande d'information :".$donnees['libelle']." ".$donnees['code']."'>".$donnees['contact'].'</a><br><a href="'.$donnees['lien'].'">Télécharger la Fiche</a>'; ?></td>
+                <td width="10%"><?php echo $value[0]; ?></td>
+                <?php if(!empty($_POST) && $_POST['famille'] != "Aucun Filtre"){}else{ echo'<td width="10%">'; echo $value[1]."</td>"; } ?>
+                <?php if(!empty($_POST) && $_POST['type'] != "Aucun Filtre"){}else{ echo'<td width="10%">'; echo $value[2]."</td>"; } ?>
+                <td width="10%"><?php echo $value[3]; ?></td>
+                <td width="10%"><?php echo $value[4]; ?></td>
+                <?php echo'<td width="10%">'.$value[5]."</td>"; ?>
+                <td width="10%"><?php echo $value[6]; ?></td>
+                <td width="10%"><?php if($value[7] == 0){echo "Gratuit";}else{echo $value[7].' F';} ?></td>
+                <td width="10%"><?php echo "<a href='mailto:".$value[8]."?subject= Demande d'information :".$value[0]." ".$value[9]."'>".$value[8].'</a><br><a href="'.$value[10].'">Télécharger la Fiche</a>'; ?></td>
               </tr>
 <?php   }  ?>
      </tbody> </table> </div>  </div><?php
